@@ -2,8 +2,8 @@
 
 #include "msgqueue.hpp"
 
-// 定义宏 LOG_INFO("xxx %d %s", 20, "xxxx")
-#define LOG_INFO(logmsgformat, ...) \
+// 定义宏 INFO_LOG("xxx %d %s", 20, "xxxx")
+#define INFO_LOG(logmsgformat, ...) \
     do \
     {  \
         Logger &logger = Logger::GetInstance(); \
@@ -13,7 +13,7 @@
         logger.Log(c); \
     } while(0) \
 
-#define LOG_ERR(logmsgformat, ...) \
+#define ERR_LOG(logmsgformat, ...) \
     do \
     {  \
         Logger &logger = Logger::GetInstance(); \

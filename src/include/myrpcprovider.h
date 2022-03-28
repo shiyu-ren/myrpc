@@ -1,10 +1,10 @@
 #pragma once
 #include "google/protobuf/service.h"
 #include <memory>
-#include <muduo/net/TcpServer.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/InetAddress.h>
-#include <muduo/net/TcpConnection.h>
+#include <mymuduo/TcpServer.h>
+#include <mymuduo/EventLoop.h>
+#include <mymuduo/InetAddress.h>
+#include <mymuduo/TcpConnection.h>
 #include <google/protobuf/descriptor.h>
 #include <unordered_map>
 
@@ -20,7 +20,7 @@ public:
 
 private:
     //组合了EventLoop
-    muduo::net::EventLoop m_eventLoop;
+    mymuduo::EventLoop m_eventLoop;
 
     struct ServiceInfo
     {
@@ -31,9 +31,9 @@ private:
     // 存储注册成功的服务对象和其服务方法的所有信息
     std::unordered_map<std::string, ServiceInfo> m_serviceMap;
 
-    void OnConnection(const muduo::net::TcpConnectionPtr &conn);
-    void OnMessage(const muduo::net::TcpConnectionPtr &conn, muduo::net::Buffer *buffer, muduo::Timestamp timestamp);
+    void OnConnection(const mymuduo::TcpConnectionPtr &conn);
+    void OnMessage(const mymuduo::TcpConnectionPtr &conn, mymuduo::Buffer *buffer, mymuduo::Timestamp timestamp);
 
     //  Closure的回调操作，用于序列化rpc的响应和网络发送
-    void SendRpcResponse(const muduo::net::TcpConnectionPtr &, google::protobuf::Message *);
+    void SendRpcResponse(const mymuduo::TcpConnectionPtr &, google::protobuf::Message *);
 };

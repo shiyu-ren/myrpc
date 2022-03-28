@@ -42,8 +42,8 @@ public:
 
 int main(int argc, char **argv)
 {
-    LOG_INFO("first log message!");
-    LOG_ERR("%s:%s:%d", __FILE__, __FUNCTION__, __LINE__);
+    INFO_LOG("first log message!");
+    ERR_LOG("%s:%s:%d", __FILE__, __FUNCTION__, __LINE__);
     //调用框架的初始化操作
     MyRpcApplication::Init(argc, argv);
 

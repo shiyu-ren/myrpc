@@ -23,7 +23,7 @@ void MyRpcProvider::NotifyService(google::protobuf::Service *service)
     int methodCnt = pserviceDesc->method_count();
 
     // std::cout << "service_name:" << service_name << std::endl;
-    LOG_INFO("service_name:%s", service_name.c_str());
+    INFO_LOG("service_name:%s", service_name.c_str());
 
     for(int i = 0; i < methodCnt; ++i)
     {
@@ -31,7 +31,7 @@ void MyRpcProvider::NotifyService(google::protobuf::Service *service)
         const google::protobuf::MethodDescriptor *pmethodDesc = pserviceDesc->method(i);
         std::string method_name = pmethodDesc->name();
         // std::cout << "method_name:" << method_name << std::endl;
-        LOG_INFO("method_name:%s", method_name.c_str());
+        INFO_LOG("method_name:%s", method_name.c_str());
         service_info.m_methodMap.insert({method_name, pmethodDesc});
     }
     service_info.m_service = service;
@@ -42,10 +42,10 @@ void MyRpcProvider::Run()
 {
     std::string ip = MyRpcApplication::GetInstance().GetConfig().Load("rpcserver_ip");
     uint16_t port = atoi(MyRpcApplication::GetInstance().GetConfig().Load("rpcserver_port").c_str());
-    muduo::net::InetAddress address(ip, port);
+    mymuduo::InetAddress address(ip, port);
 
     // 创建TCPserver对象
-    muduo::net::TcpServer server(&m_eventLoop, address, "MyRpcProvider");
+    mymuduo::TcpServer server(&m_eventLoop, address, "MyRpcProvider");
     // 绑定连接回调和消息读写回调方法
     server.setConnectionCallback(std::bind(&MyRpcProvider::OnConnection, this, std::placeholders::_1));
     server.setMessageCallback(std::bind(&MyRpcProvider::OnMessage, this,  std::placeholders::_1,  std::placeholders::_2,  std::placeholders::_3));
@@ -80,7 +80,7 @@ void MyRpcProvider::Run()
 }
 
 
-void MyRpcProvider::OnConnection(const muduo::net::TcpConnectionPtr &conn)
+void MyRpcProvider::OnConnection(const mymuduo::TcpConnectionPtr &conn)
 {
     if(!conn->connected())
     {
@@ -101,7 +101,7 @@ void MyRpcProvider::OnConnection(const muduo::net::TcpConnectionPtr &conn)
     head_size(4B) + header_str + args_str
 */
 
-void MyRpcProvider::OnMessage(const muduo::net::TcpConnectionPtr& conn, muduo::net::Buffer* buffer, muduo::Timestamp timestamp)
+void MyRpcProvider::OnMessage(const mymuduo::TcpConnectionPtr& conn, mymuduo::Buffer* buffer, mymuduo::Timestamp timestamp)
 {
     //  网络上接受的远程rpc调用请求的字符流     Login args
     std::string recv_buf = buffer->retrieveAllAsString();
@@ -170,16 +170,16 @@ void MyRpcProvider::OnMessage(const muduo::net::TcpConnectionPtr& conn, muduo::n
 
     //  给下面的method方法的调用，绑定一个Closure回调
     google::protobuf::Closure *done =  google::protobuf::NewCallback<MyRpcProvider, 
-                                                                                                        const muduo::net::TcpConnectionPtr&, 
-                                                                                                        google::protobuf::Message * >
-                                                                                                        (this, &MyRpcProvider::SendRpcResponse, conn, response);
+    const mymuduo::TcpConnectionPtr&, 
+            google::protobuf::Message * >
+            (this, &MyRpcProvider::SendRpcResponse, conn, response);
 
     //  在框架上根据远端rpc请求，调用当前rpc节点上的发布的方法
     //  new UserService().Login(controller, request, response, done)
     service->CallMethod(method, nullptr, request, response, done);
 }
 
-void MyRpcProvider::SendRpcResponse(const muduo::net::TcpConnectionPtr &conn, google::protobuf::Message *response)
+void MyRpcProvider::SendRpcResponse(const mymuduo::TcpConnectionPtr &conn, google::protobuf::Message *response)
 {
     // 将response序列化
     std::string response_str;
