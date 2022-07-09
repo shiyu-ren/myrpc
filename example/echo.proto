@@ -1,0 +1,16 @@
+package echo;
+
+option cc_generic_services = true;
+
+message EchoRequest {
+  required string payload = 1;
+}
+
+message EchoResponse {
+  required string payload = 2;
+}
+
+service EchoService {
+  rpc Echo (EchoRequest) returns (EchoResponse);
+}
+
